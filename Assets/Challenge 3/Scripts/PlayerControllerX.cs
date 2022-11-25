@@ -1,14 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using Unity.Mathematics;
 
 public class PlayerControllerX : MonoBehaviour
 {
     public bool gameOver;
 
     public float floatForce;
-    private float gravityModifier = 1.5f;
-    private Rigidbody playerRb;
+    private float gravityModifier = 1.1f;
+
+    public Rigidbody playerRb;
 
     public ParticleSystem explosionParticle;
     public ParticleSystem fireworksParticle;
@@ -16,26 +19,47 @@ public class PlayerControllerX : MonoBehaviour
     private AudioSource playerAudio;
     public AudioClip moneySound;
     public AudioClip explodeSound;
+    public AudioClip boingSound;
 
+    public Keyboard keyboard;
+    public Mouse mouse;
+
+    public bool floatUp;
 
     // Start is called before the first frame update
     void Start()
     {
+        playerRb = GetComponent<Rigidbody>();
+        keyboard = Keyboard.current;
+        mouse = Mouse.current;
         Physics.gravity *= gravityModifier;
         playerAudio = GetComponent<AudioSource>();
 
         // Apply a small upward force at the start of the game
-        playerRb.AddForce(Vector3.up * 5, ForceMode.Impulse);
+        //playerRb.AddForce(Vector3.up * 5, ForceMode.Impulse);
 
     }
 
+    private void FixedUpdate()
+    {
+        if(floatUp == true)
+        {
+            playerRb.AddForce(new float3(0, 1, 0) * floatForce);
+            playerRb.velocity = math.clamp(playerRb.velocity, -10, 10);
+        }
+    }
+
     // Update is called once per frame
-    void Update()
+    void Update()   
     {
         // While space is pressed and player is low enough, float up
-        if (Input.GetKey(KeyCode.Space) && !gameOver)
+        if (keyboard.spaceKey.isPressed && !gameOver && transform.position.y < 13)
         {
-            playerRb.AddForce(Vector3.up * floatForce);
+            floatUp = true;
+        }
+        else
+        {
+            floatUp = false;
         }
     }
 
@@ -47,6 +71,7 @@ public class PlayerControllerX : MonoBehaviour
             explosionParticle.Play();
             playerAudio.PlayOneShot(explodeSound, 1.0f);
             gameOver = true;
+            playerRb.isKinematic = true;
             Debug.Log("Game Over!");
             Destroy(other.gameObject);
         } 
@@ -60,6 +85,13 @@ public class PlayerControllerX : MonoBehaviour
 
         }
 
+        else if (other.gameObject.CompareTag("Boundary"))
+        {
+            playerAudio.PlayOneShot(boingSound, 2.0f);
+        }
+
     }
+
+    
 
 }

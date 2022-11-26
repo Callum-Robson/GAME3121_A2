@@ -9,7 +9,7 @@ public class PlayerControllerX : MonoBehaviour
     private Rigidbody playerRb;
     public float speed = 500;
     public int speedBoostDuration = 2;
-    public int speedBoostNewSpeed = 3000;
+    public int speedBoostNewSpeed = 2750;
     public int speedBoostDecelerationAmount = 10;
     private bool isBoosted;
     private GameObject focalPoint;

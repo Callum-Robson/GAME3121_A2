@@ -524,6 +524,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 500
+  speedBoostDuration: 2
+  speedBoostNewSpeed: 2750
+  speedBoostDecelerationAmount: 10
   hasPowerup: 0
   powerupIndicator: {fileID: 1427939658}
   powerUpDuration: 5

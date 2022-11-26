@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Mathematics;
 
 namespace Part1
 {
     public class RepeatBackgroundX : MonoBehaviour
     {
-        private Vector3 startPos;
+        private float3 startPos;
         private float repeatWidth;
 
         private void Start()

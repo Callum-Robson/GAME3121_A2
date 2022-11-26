@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Unity.Mathematics;
 
 public class PlayerControllerX : MonoBehaviour
 {
@@ -48,7 +49,6 @@ public class PlayerControllerX : MonoBehaviour
 
     void Update()
     {
-
         if (keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed)
         {
             moving = true;
@@ -64,7 +64,7 @@ public class PlayerControllerX : MonoBehaviour
             moving = false;
         }
 
-        smokeParticle.transform.position = new Vector3(transform.position.x, -0.75f, transform.position.z);
+        smokeParticle.transform.position = new float3(transform.position.x, -0.75f, transform.position.z);
         if (keyboard.spaceKey.isPressed && isBoosted == false)
         {
             smokeParticle.Play();
@@ -82,14 +82,8 @@ public class PlayerControllerX : MonoBehaviour
             }
         }
 
-
-
-        // Add force to player in direction of the focal point (and camera)
-        //float verticalInput = Input.GetAxis("Vertical");
-        //playerRb.AddForce(focalPoint.transform.forward * verticalInput * speed * Time.deltaTime); 
-
         // Set powerup indicator position to beneath player
-        powerupIndicator.transform.position = transform.position + new Vector3(0, -0.6f, 0);
+        powerupIndicator.transform.position = new float3(transform.position.x + 0, transform.position.y - 0.6f, transform.position.z + 0);
 
     }
 
@@ -125,7 +119,7 @@ public class PlayerControllerX : MonoBehaviour
         if (other.gameObject.CompareTag("Enemy"))
         {
             Rigidbody enemyRigidbody = other.gameObject.GetComponent<Rigidbody>();
-            Vector3 awayFromPlayer =  other.gameObject.transform.position - transform.position; 
+            float3 awayFromPlayer =  other.gameObject.transform.position - transform.position; 
            
             if (hasPowerup) // if have powerup hit enemy with powerup force
             {

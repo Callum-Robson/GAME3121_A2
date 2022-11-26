@@ -38,7 +38,7 @@ namespace Part1
             playerAudio = GetComponent<AudioSource>();
 
             // Apply a small upward force at the start of the game
-            //playerRb.AddForce(Vector3.up * 5, ForceMode.Impulse);
+            playerRb.AddForce(new float3(0,1,0) * 5, ForceMode.Impulse);
 
         }
 

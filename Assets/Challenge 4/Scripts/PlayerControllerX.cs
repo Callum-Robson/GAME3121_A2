@@ -6,12 +6,17 @@ using UnityEngine.InputSystem;
 public class PlayerControllerX : MonoBehaviour
 {
     private Rigidbody playerRb;
-    private float speed = 500;
+    public float speed = 500;
+    public int speedBoostDuration = 2;
+    public int speedBoostNewSpeed = 3000;
+    public int speedBoostDecelerationAmount = 10;
+    private bool isBoosted;
     private GameObject focalPoint;
 
     public bool hasPowerup;
     public GameObject powerupIndicator;
     public int powerUpDuration = 5;
+
 
     private float normalStrength = 10; // how hard to hit enemy without powerup
     private float powerupStrength = 25; // how hard to hit enemy with powerup
@@ -22,6 +27,7 @@ public class PlayerControllerX : MonoBehaviour
     private bool moving;
     private float verticalInput = 0f;
 
+    public ParticleSystem smokeParticle;
 
 
     void Start()
@@ -34,15 +40,16 @@ public class PlayerControllerX : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(moving == true)
+        if (moving == true)
         {
-            playerRb.AddForce(focalPoint.transform.forward * speed * Time.deltaTime);
+            playerRb.AddForce(focalPoint.transform.forward * verticalInput * speed * Time.deltaTime);
         }
     }
 
     void Update()
     {
-        if(keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed)
+
+        if (keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed)
         {
             moving = true;
             verticalInput = 1f;
@@ -56,14 +63,27 @@ public class PlayerControllerX : MonoBehaviour
         {
             moving = false;
         }
-        if(keyboard.spaceKey.isPressed)
+
+        smokeParticle.transform.position = new Vector3(transform.position.x, -0.75f, transform.position.z);
+        if (keyboard.spaceKey.isPressed && isBoosted == false)
         {
-            speed = 1000;
+            smokeParticle.Play();
+            isBoosted = true;
+            speed = speedBoostNewSpeed;
+            StartCoroutine("SpeedBoostCooldown");
         }
-        else
+        if(isBoosted && speed > 500)
         {
-            speed = 500;
+            speed -=    speedBoostDecelerationAmount;
+
+            if (smokeParticle.isPlaying == false)
+            {
+                smokeParticle.Play();
+            }
         }
+
+
+
         // Add force to player in direction of the focal point (and camera)
         //float verticalInput = Input.GetAxis("Vertical");
         //playerRb.AddForce(focalPoint.transform.forward * verticalInput * speed * Time.deltaTime); 
@@ -93,8 +113,14 @@ public class PlayerControllerX : MonoBehaviour
         powerupIndicator.SetActive(false);
     }
 
-    // If Player collides with enemy
-    private void OnCollisionEnter(Collision other)
+    IEnumerator SpeedBoostCooldown()
+    {
+        yield return new WaitForSeconds(speedBoostDuration);
+        speed = 500;
+        isBoosted = false;
+    }
+        // If Player collides with enemy
+        private void OnCollisionEnter(Collision other)
     {
         if (other.gameObject.CompareTag("Enemy"))
         {

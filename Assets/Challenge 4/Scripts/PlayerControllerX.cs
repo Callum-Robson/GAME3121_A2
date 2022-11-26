@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerControllerX : MonoBehaviour
 {
@@ -14,18 +15,58 @@ public class PlayerControllerX : MonoBehaviour
 
     private float normalStrength = 10; // how hard to hit enemy without powerup
     private float powerupStrength = 25; // how hard to hit enemy with powerup
-    
+
+    private Keyboard keyboard;
+    private Mouse mouse;
+
+    private bool moving;
+    private float verticalInput = 0f;
+
+
+
     void Start()
     {
+        keyboard = Keyboard.current;
+        mouse = Mouse.current;
         playerRb = GetComponent<Rigidbody>();
         focalPoint = GameObject.Find("Focal Point");
     }
 
+    private void FixedUpdate()
+    {
+        if(moving == true)
+        {
+            playerRb.AddForce(focalPoint.transform.forward * speed * Time.deltaTime);
+        }
+    }
+
     void Update()
     {
+        if(keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed)
+        {
+            moving = true;
+            verticalInput = 1f;
+        }
+        else if (keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed)
+        {
+            moving = true;
+            verticalInput = -1f;
+        }
+        else
+        {
+            moving = false;
+        }
+        if(keyboard.spaceKey.isPressed)
+        {
+            speed = 1000;
+        }
+        else
+        {
+            speed = 500;
+        }
         // Add force to player in direction of the focal point (and camera)
-        float verticalInput = Input.GetAxis("Vertical");
-        playerRb.AddForce(focalPoint.transform.forward * verticalInput * speed * Time.deltaTime); 
+        //float verticalInput = Input.GetAxis("Vertical");
+        //playerRb.AddForce(focalPoint.transform.forward * verticalInput * speed * Time.deltaTime); 
 
         // Set powerup indicator position to beneath player
         powerupIndicator.transform.position = transform.position + new Vector3(0, -0.6f, 0);
